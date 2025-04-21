@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PDF Chatbot</title>
+  <style>
+    :root {
+      --primary-color: #4CAF50;
+      --accent-color: #f44336;
+
+      --bg-light: #f5f5f5;
+      --bg-dark: #121212;
+
+      --font-light: #ffffff;
+      --font-dark: #1e1e1e;
+
+      --user-bg-light: #d9f2ff;
+      --user-bg-dark: #2c3e50;
+
+      --bot-bg-light: #eeeeee;
+      --bot-bg-dark: #1f2a38;
+
+      --card-bg-light: #ffffff;
+      --card-bg-dark: #1e1e1e;
+
+      --border-radius: 12px;
+      --shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+      max-width: 1200px;
+      margin: auto;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.light {
+      background-color: var(--bg-light);
+      color: var(--font-dark);
+    }
+
+    body.dark {
+      background-color: var(--bg-dark);
+      color: var(--font-light);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      margin: 0;
+      color: var(--primary-color);
+    }
+
+    .logout-btn, .theme-toggle {
+      padding: 10px 16px;
+      border-radius: var(--border-radius);
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      margin-left: 10px;
+    }
+
+    .logout-btn {
+      background: var(--accent-color);
+      color: white;
+    }
+
+    .logout-btn:hover {
+      background: #d32f2f;
+    }
+
+    .theme-toggle {
+      background: #333;
+      color: white;
+    }
+
+    body.light .theme-toggle {
+      background: #ccc;
+      color: #333;
+    }
+
+    .chat-container {
+      display: flex;
+      gap: 20px;
+      height: 75vh;
+    }
+
+    .conversation,
+    .sources {
+      border-radius: var(--border-radius);
+      padding: 20px;
+      overflow-y: auto;
+      box-shadow: var(--shadow);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .conversation {
+      flex: 3;
+    }
+
+    .sources {
+      flex: 1;
+    }
+
+    body.light .conversation,
+    body.light .sources {
+      background-color: var(--card-bg-light);
+    }
+
+    body.dark .conversation,
+    body.dark .sources {
+      background-color: var(--card-bg-dark);
+    }
+
+    .message {
+      padding: 12px 16px;
+      border-radius: var(--border-radius);
+      line-height: 1.5;
+      word-wrap: break-word;
+      transition: background 0.3s;
+    }
+
+    body.light .user {
+      background-color: var(--user-bg-light);
+    }
+
+    body.dark .user {
+      background-color: var(--user-bg-dark);
+    }
+
+    body.light .bot {
+      background-color: var(--bot-bg-light);
+    }
+
+    body.dark .bot {
+      background-color: var(--bot-bg-dark);
+    }
+
+    .input-area {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    input[type="text"], select {
+      flex: 1;
+      padding: 12px;
+      border-radius: var(--border-radius);
+      font-size: 1rem;
+      border: none;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.light input, body.light select {
+      background: #fff;
+      color: #000;
+      border: 1px solid #ccc;
+    }
+
+    body.dark input, body.dark select {
+      background: #2c2c2c;
+      color: #fff;
+      border: 1px solid #555;
+    }
+
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: var(--border-radius);
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    #ask-btn {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    #ask-btn:hover {
+      background-color: #45a049;
+    }
+
+    #reset-btn {
+      background-color: var(--accent-color);
+      color: white;
+    }
+
+    #reset-btn:hover {
+      background-color: #d32f2f;
+    }
+
+    .source-item {
+      padding: 12px;
+      border-radius: var(--border-radius);
+      margin-bottom: 12px;
+      box-shadow: var(--shadow);
+      transition: background 0.3s;
+    }
+
+    body.light .source-item {
+      background-color: #f9f9f9;
+    }
+
+    body.dark .source-item {
+      background-color: #2c2c2c;
+    }
+
+    .source-link {
+      display: inline-block;
+      margin: 8px 0;
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .source-link:hover {
+      text-decoration: underline;
+    }
+    .theme-toggle-icon {
+      background: transparent;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      transition: transform 0.4s ease;
+      padding: 8px;
+      border-radius: 50%;
+    }
+    
+    .theme-toggle-icon:hover {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+    
+    body.dark .theme-toggle-icon:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    @media (max-width: 768px) {
+      .chat-container {
+        flex-direction: column;
+        height: auto;
+      }
+
+      .input-area {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body class="light">
+  <div class="header">
+    <h1>Jarvis AI</h1>
+    <div>
+      <a class="logout-btn" href="/logout">Logout</a>
+      <button class="theme-toggle-icon" onclick="toggleTheme()" title="Toggle theme">
+        <span id="theme-icon">🌙</span>
+      </button>
+      
+    </div>
+  </div>
+
+  <div class="chat-container">
+    <div class="conversation" id="conversation">
+      <div class="message bot">Hi there! I'm your AI assistant. I can answer questions about the documents in my knowledge base.
+        What would you like to know?</div>
+    </div>
+    <div class="sources" id="sources">
+      <h3>Sources</h3>
+      <div id="source-content">
+        <p>Sources will appear here when you ask a question.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <select id="pdfSelect">
+      <option disabled selected>Loading PDFs...</option>
+    </select>
+    <input type="text" id="query" placeholder="Ask a question..." />
+    <button id="ask-btn">Ask</button>
+    <button id="reset-btn">Reset</button>
+  </div>
+
+  <script>
+    const conversation = document.getElementById('conversation');
+    const sourceContent = document.getElementById('source-content');
+    const queryInput = document.getElementById('query');
+    const askButton = document.getElementById('ask-btn');
+    const resetButton = document.getElementById('reset-btn');
+    const pdfSelect = document.getElementById('pdfSelect');
+
+    async function loadPDFList() {
+      try {
+        const res = await fetch('/pdf-list');
+        const data = await res.json();
+        pdfSelect.innerHTML = '';
+        data.pdfs.forEach(pdf => {
+          const option = document.createElement('option');
+          option.value = pdf;
+          option.textContent = pdf;
+          pdfSelect.appendChild(option);
+        });
+      } catch (error) {
+        console.error('Failed to load PDF list:', error);
+        pdfSelect.innerHTML = '<option disabled>Error loading PDFs</option>';
+      }
+    }
+
+    async function askQuestion() {
+      const query = queryInput.value.trim();
+      const selectedPDF = pdfSelect.value;
+      if (!query || !selectedPDF) return;
+
+      addMessage(query, 'user');
+      queryInput.value = '';
+
+      try {
+        const response = await fetch('/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query, pdf_name: selectedPDF }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          addMessage(data.answer, 'bot');
+          updateSources(data.chunks);
+        } else {
+          addMessage(`Error: ${data.error || 'Unknown error'}`, 'bot');
+        }
+      } catch (error) {
+        addMessage(`Error: ${error.message}`, 'bot');
+      }
+    }
+
+    function addMessage(text, type) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${type}`;
+      messageDiv.innerText = text;
+      conversation.appendChild(messageDiv);
+      conversation.scrollTop = conversation.scrollHeight;
+    }
+
+    function updateSources(chunks) {
+      sourceContent.innerHTML = '';
+      chunks.forEach(chunk => {
+        const sourceDiv = document.createElement('div');
+        sourceDiv.className = 'source-item';
+
+        const sourceText = document.createElement('p');
+        sourceText.innerText = `${chunk.source} (Page ${chunk.page})`;
+
+        const sourceLink = document.createElement('a');
+        sourceLink.className = 'source-link';
+        sourceLink.href = chunk.link;
+        sourceLink.target = '_blank';
+        sourceLink.innerText = 'View Source';
+
+        const preview = document.createElement('p');
+        preview.innerText = chunk.text.substring(0, 150) + '...';
+
+        sourceDiv.appendChild(sourceText);
+        sourceDiv.appendChild(sourceLink);
+        sourceDiv.appendChild(preview);
+        sourceContent.appendChild(sourceDiv);
+      });
+    }
+
+    async function resetConversation() {
+      try {
+        const response = await fetch('/reset', { method: 'POST' });
+        if (response.ok) {
+          conversation.innerHTML = '';
+          addMessage('Hello! Ask me anything about the PDFs in the database.', 'bot');
+          sourceContent.innerHTML = '<p>Sources will appear here when you ask a question.</p>';
+        }
+      } catch (error) {
+        console.error('Error resetting conversation:', error);
+      }
+    }
+
+    function toggleTheme() {
+      const body = document.body;
+      const icon = document.getElementById("theme-icon");
+    
+      body.classList.toggle("dark");
+      body.classList.toggle("light");
+    
+      // Animate icon switch
+      icon.style.transform = "rotate(180deg)";
+      icon.style.opacity = "0";
+    
+      setTimeout(() => {
+        icon.innerText = body.classList.contains("dark") ? "🌞" : "🌙";
+        icon.style.transform = "rotate(0deg)";
+        icon.style.opacity = "1";
+      }, 300);
+    }
+    
+
+    askButton.addEventListener('click', askQuestion);
+    queryInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') askQuestion();
+    });
+    resetButton.addEventListener('click', resetConversation);
+    pdfSelect.addEventListener('change', resetConversation);
+    window.onload = loadPDFList;
+  </script>
+</body>
+</html>

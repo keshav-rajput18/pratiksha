@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Home</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #1c1c1c, #343a40);
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: #2c2f33;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 30px;
+      color: #f1f1f1;
+    }
+
+    a {
+      padding: 12px 24px;
+      background-color: #00bcd4;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 16px;
+      display: inline-block;
+      transition: background 0.3s ease;
+    }
+
+    a:hover {
+      background-color: #00acc1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Welcome, {{ username }}!</h2>
+    <a href="{{ url_for('logout') }}">Logout</a>
+  </div>
+</body>
+</html>

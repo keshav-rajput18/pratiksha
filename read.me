@@ -1,0 +1,26 @@
+echo "# NHPC" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/keshav-rajput18/NHPC.git
+git push -u origin main
+…or push an existing repository from the command line
+git remote add origin https://github.com/keshav-rajput18/NHPC.git
+git branch -M main
+git push -u origin main
+
+
+
+
+# Start a simple HTTP server for PDFs
+def start_pdf_server():
+    os.chdir(DATA_PATH)
+    handler = SimpleHTTPRequestHandler
+    server = HTTPServer(("localhost", PDF_SERVER_PORT), handler)
+    print(f"Starting local PDF server at http://localhost:{PDF_SERVER_PORT}/")
+    server.serve_forever()
+
+# Run the PDF server in a separate thread
+server_thread = threading.Thread(target=start_pdf_server, daemon=True)
+server_thread.start()
